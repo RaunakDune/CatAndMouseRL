@@ -141,11 +141,12 @@ public class CatAndMouseWorld implements RLWorld{
 	public double calcReward() {
 		double newReward = 0;
 		if ((mx==chx)&&(my==chy)) {
-			mousescore++;
+			mousescore += cheeseReward;
 			newReward += cheeseReward;
 		}
 		if ((cx==mx) && (cy==my)) {
 			catscore++;
+			mousescore -= deathPenalty;
 			newReward -= deathPenalty;
 		}
 		//if ((mx==hx)&&(my==hy)&&(gotCheese)) newReward += 100;
