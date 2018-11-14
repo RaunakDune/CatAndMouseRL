@@ -58,11 +58,12 @@ public class CatAndMouseWorld implements RLWorld{
 			// move agent
 			mx = ax; my = ay;
 		} else {
+			//mousescore--;
 			//System.err.println("Illegal action: "+action);
 		}
 		// update world
 		moveCat();
-		waitingReward = calcReward();
+		waitingReward = calcReward(action);
 		
 		// if mouse has cheese, relocate cheese
 		if ((mx==chx) && (my==chy)) {
@@ -138,20 +139,49 @@ public class CatAndMouseWorld implements RLWorld{
 		return stateArray;
 	}
 
-	public double calcReward() {
-		double newReward = 0;
-		if ((mx==chx)&&(my==chy)) {
-			mousescore += cheeseReward;
-			newReward += cheeseReward;
-		}
-		if ((cx==mx) && (cy==my)) {
-			catscore++;
-			mousescore -= deathPenalty;
-			newReward -= deathPenalty;
-		}
-		//if ((mx==hx)&&(my==hy)&&(gotCheese)) newReward += 100;
-		return newReward;		
+	
+public double calcReward(int action) {
+	double newReward = 0;
+	double extraReward = 5;
+	if ((mx==chx)&&(my==chy)) {
+		mousescore++;
+		newReward += cheeseReward;
 	}
+	// if mouse on cheese
+	else if ((cx==mx) && (cy==my)) {
+		catscore++;
+		newReward -= deathPenalty;
+	}
+	// if mouse on cat
+	else if ((cx != mx))
+        {
+            newReward += 2*extraReward;
+        }
+	// if the mouse is in the same corridor as the cheese and not the cat
+	else if ((action == 1) || (action == 3) || (action == 5) || (action == 7)){
+		newReward += extraReward;
+	}
+	else if ((mx < chx)){
+		if ((action == 1) || (action == 7)){
+			newReward += extraReward;
+		}
+		else{
+			newReward -= extraReward;
+		}
+	}
+	else if ((mx > chx)){
+		if ((action == 3) || (action == 5)){
+			newReward += extraReward;
+		}
+		else{
+			newReward -= extraReward;
+		}
+	}
+	
+	
+	//if ((mx==hx)&&(my==hy)&&(gotCheese)) newReward += 100;
+	return newReward;        
+}
 	
 	public void setRandomPos() {
 		Dimension d = getRandomPos();
